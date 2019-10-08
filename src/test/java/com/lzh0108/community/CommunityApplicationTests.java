@@ -1,7 +1,6 @@
 package com.lzh0108.community;
 
-import com.lzh0108.community.Service.AlphaService;
-import com.lzh0108.community.config.AlphaConfig;
+import com.lzh0108.community.service.AlphaService;
 import com.lzh0108.community.controller.AlphaController;
 import com.lzh0108.community.dao.AlphaDao;
 import org.junit.Test;

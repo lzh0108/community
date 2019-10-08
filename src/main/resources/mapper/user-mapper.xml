@@ -33,6 +33,7 @@
         where email = #{email}
     </select>
 
+    <!-- keyProperty="id" 声明id为自动生成的，数据库自动生成后会将值又传回到当前user的id  -->
     <insert id="insertUser" parameterType="User" keyProperty="id">
         insert into user (<include refid="insertFields"></include>)
         values(#{username},#{password},#{salt},#{email},#{type},#{status},#{activationCode},#{headerUrl},#{createTime})
