@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = CommunityApplication.class)
 public class LogerTest {
 
+    // 单独为这个类实例化一个logger
     private static final Logger logger = LoggerFactory.getLogger(LogerTest.class);
 
     @Test

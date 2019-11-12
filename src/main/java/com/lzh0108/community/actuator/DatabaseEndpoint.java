@@ -24,6 +24,7 @@ public class DatabaseEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseEndpoint.class);
 
+    // 连接池的顶层接口
     @Autowired
     private DataSource dataSource;
 

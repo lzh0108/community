@@ -22,6 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
 
     @Override
     public void configure(WebSecurity web) throws Exception {
+        // 忽略掉对静态资源的拦截
         web.ignoring().antMatchers("/resources/**");
     }
 
@@ -64,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                 )
                 // 除了上面那些以外的任何请求，都允许
                 .anyRequest().permitAll();
-        // 关闭csrf验证
+        // 这里可以关闭csrf验证，默认是开启的
 //                .and().csrf().disable();
 
         // 权限不够时的处理
@@ -110,6 +111,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
 
         // Security底层默认会拦截/logout请求，进行退出处理
         // 覆盖它默认的逻辑才能执行我们自己的退出代码，即修改security的退出路径，做一个善意的欺骗
+        // 即修改SpringSecurity拦截的退出路径，以便可以执行我们自己的退出逻辑
         http.logout().logoutUrl("/securitylogout");
 
     }

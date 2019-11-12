@@ -12,6 +12,10 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+/**
+ * 统一处理异常
+ * @ControllerAdvice 用于修饰类，表示该类是Controller的全局配置类
+ */
 
 // 参数annotations配置为，只扫描带有controller注解的bean
 @ControllerAdvice(annotations = Controller.class)
@@ -19,6 +23,7 @@ public class ExceptionAdvice {
 
     public static final Logger logger = LoggerFactory.getLogger(ExceptionAdvice.class);
 
+    // 处理异常
     @ExceptionHandler({Exception.class})
     public void handleException(Exception e, HttpServletRequest request, HttpServletResponse response) throws IOException {
 

@@ -29,7 +29,7 @@ public class SearchController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
-    // search?keyword=xxx
+    // 请求路径：search?keyword=xxx
     @RequestMapping(path = "/search", method = RequestMethod.GET)
     public String search(String keyword, Page page, Model model) {
 

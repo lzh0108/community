@@ -25,8 +25,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.util.Date;
 
+
+// @Scopre Bean的作用范围，是整个容器中只有一个，还是可以实例化多个（默认是singleton，单例模式）
 @Service
-@Scope("prototype") // 可以创建多个实例，不是单例模式
+//@Scope("prototype") // 可以创建多个实例，不是单例模式
 public class AlphaService {
 
     private static final Logger logger = LoggerFactory.getLogger(AlphaService.class);
@@ -47,11 +49,13 @@ public class AlphaService {
 //        System.out.println("实例化AlphaService");
 //    }
 
+    // 容器会自动在构造器之后调用该方法
 //    @PostConstruct
 //    public void init() {
 //        System.out.println("初始化AlphaService");
-//    }/
+//    }
 
+    // 容器会自动在销毁对象之前调用该方法
 //    @PreDestroy
 //    public void destroy() {
 //        System.out.println("销毁AlphaService");
@@ -65,11 +69,13 @@ public class AlphaService {
     // 测试Spring两种管理事务的方法
 
     // 测试一个完整的事务，新增用户并且新增新人报道帖子
-    //
-    // 事务的传播机制
+
+    // 参数ioslation 表明事务的隔离性
+
+    // 参数propagation 表明事务的传播机制
     // REQUIRED       ：若当前存在事务，则加入该事务，若不存在事务，则新建一个事务。
     // REQUIRES_NEW   ：若当前没有事务，则新建一个事务。若当前存在事务，则新建一个事务，新老事务相互独立。外部事务抛出异常回滚不会影响内部事务的正常提交。
-    // NESTED         ：如果当前存在事务，则嵌套在当前事务中执行。如果当前没有事务，则新建一个事务。
+    // NESTED         ：如果当前存在（外部）事务，则嵌套在当前（外部）事务中执行（内部事务有独立的回滚和提交）。如果当前没有事务，则新建一个事务。
 
     // 声明式事务
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
@@ -91,6 +97,7 @@ public class AlphaService {
         post.setCreateTime(new Date());
         discussPostMapper.insertDiscussPost(post);
 
+        // 观察事务是否回滚
         Integer.valueOf("abc");
 
         return "ok";

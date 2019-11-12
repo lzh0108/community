@@ -1,5 +1,7 @@
 package com.lzh0108.community;
 
+import com.lzh0108.community.entity.DiscussPost;
+import com.lzh0108.community.service.DiscussPostService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import org.springframework.data.redis.core.*;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(SpringRunner.class)
@@ -20,6 +23,9 @@ public class RedisTests {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private DiscussPostService discussPostService;
 
     @Test
     public void testStrings() {
@@ -149,6 +155,7 @@ public class RedisTests {
 
                 System.out.println(operations.opsForSet().members(redisKey));
 
+                // 提交事务
                 return operations.exec();
 
             }
@@ -216,7 +223,8 @@ public class RedisTests {
         System.out.println(redisTemplate.opsForValue().getBit(redisKey, 1));
         System.out.println(redisTemplate.opsForValue().getBit(redisKey, 2));
 
-        // 统计
+        // 统计（1的个数）
+        // 需要Redis底层的连接才能获得统计的方法
         Object obj = redisTemplate.execute(new RedisCallback() {
             @Override
             public Object doInRedis(RedisConnection redisConnection) throws DataAccessException {
@@ -256,14 +264,77 @@ public class RedisTests {
         });
         System.out.println(obj);
 
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,0));
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,1));
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,2));
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,3));
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,4));
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,5));
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,6));
-        System.out.println(redisTemplate.opsForValue().getBit(redisKey,7));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 0));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 1));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 2));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 3));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 4));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 5));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 6));
+        System.out.println(redisTemplate.opsForValue().getBit(redisKey, 7));
+
+    }
+
+    @Test
+    public void testListRange() {
+
+        String key = "test:hot:post";
+
+        List<DiscussPost> list = discussPostService.findDiscussPosts(0, 0, 10, 1);
+
+        System.out.println("原始数据：");
+        for (DiscussPost discussPost : list) {
+            System.out.println(discussPost.toString());
+        }
+
+        redisTemplate.opsForList().rightPushAll(key, list);
+
+        System.out.println("Redis取出的数据：");
+        List<DiscussPost> result = redisTemplate.opsForList().range(key, 0, 9);
+        for (DiscussPost discussPost : result) {
+            System.out.println(discussPost.toString());
+        }
+
+        redisTemplate.delete(key);
+
+
+    }
+
+    @Test
+    public void testDelete() {
+        String key = "test:delete";
+        List<DiscussPost> list = discussPostService.findDiscussPosts(0, 0, 10, 1);
+        System.out.println("原始数据：");
+        for (DiscussPost discussPost : list) {
+            System.out.println(discussPost.toString());
+        }
+
+        redisTemplate.opsForList().rightPushAll(key, list);
+
+
+        System.out.println("Redis取出的数据：");
+        List<DiscussPost> result = redisTemplate.opsForList().range(key, 0, 9);
+        for (DiscussPost discussPost : result) {
+            System.out.println(discussPost.toString());
+        }
+
+        redisTemplate.delete(key);
+
+        list = discussPostService.findDiscussPosts(0, 10, 10, 1);
+        System.out.println("后来数据：");
+        for (DiscussPost discussPost : list) {
+            System.out.println(discussPost.toString());
+        }
+
+        redisTemplate.opsForList().rightPushAll(key, list);
+
+        System.out.println("Redis取出的数据：");
+        result = redisTemplate.opsForList().range(key, 0, 9);
+        for (DiscussPost discussPost : result) {
+            System.out.println(discussPost.toString());
+        }
+
+        redisTemplate.delete(key);
 
     }
 

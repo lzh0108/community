@@ -26,13 +26,15 @@ public class MailClient {
 
         try {
             MimeMessage message = mailSender.createMimeMessage();
+            // MimeMessageHelper帮助构建MimeMessage里面的内容
             MimeMessageHelper helper = new MimeMessageHelper(message);
             helper.setFrom(from);
             helper.setTo(to);
+            // 标题
             helper.setSubject(subject);
             // 第二个参数设置为true，表示支持html文件
             helper.setText(content,true);
-            mailSender.send(message);
+            mailSender.send(helper.getMimeMessage());
         } catch (MessagingException e) {
             logger.error("发送邮件失败："+e.getMessage());
         }

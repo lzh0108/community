@@ -120,12 +120,12 @@ public class UserController implements CommunityConstant {
     @RequestMapping(path = "/upload", method = RequestMethod.POST)
     public String uploadHeader(MultipartFile headerImage, Model model) {
         if (headerImage == null) {
-            model.addAttribute("erroe", "您还没有选择图片！");
+            model.addAttribute("error", "您还没有选择图片！");
             return "/site/setting";
         }
 
         // 修改文件名称，为文件配置一个专属的名称
-        // 得到文件的原始文件名
+        // 得到文件的原始文件名（用户上传时的文件名）
         String fileName = headerImage.getOriginalFilename();
         String suffix = fileName.substring(fileName.lastIndexOf("."));
         // 判断后缀名是否合理

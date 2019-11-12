@@ -75,6 +75,7 @@
 						<label for="head-image" class="col-sm-2 col-form-label text-right">选择头像:</label>
 						<div class="col-sm-10">
 							<div class="custom-file">
+								<!-- 七牛云需要的参数 -->
 								<input type="hidden" name="token" th:value="${uploadToken}">
 								<input type="hidden" name="key" th:value="${fileName}">
 								<input type="file" class="custom-file-input"

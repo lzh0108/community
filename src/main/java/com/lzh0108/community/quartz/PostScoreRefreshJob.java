@@ -43,11 +43,12 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
     // 牛客纪元
     private static final Date epoch;
 
+    // 静态代码块
     static {
         try {
             epoch = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2014-08-01 00:00:00");
         } catch (ParseException e) {
-            throw new RuntimeException("初始化牛客纪元失败！");
+            throw new RuntimeException("初始化牛客纪元失败！", e);
         }
     }
 
@@ -100,8 +101,9 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
 
         // 更新帖子的分数
         discussPostService.updateScore(postId, score);
-        post.setScore(score);
+
         // 同步ES中的数据
+        post.setScore(score);
         elasticsearchService.saveDiscussPost(post);
     }
 }

@@ -102,6 +102,7 @@ public class LoginController implements CommunityConstant {
 
         // 验证码的归属
         String kaptchaOwner = CommunityUtil.generateUUID();
+        // 向客户端颁发临时凭证，用于获取服务器对应的验证码
         Cookie cookie = new Cookie("kaptchaOwner", kaptchaOwner);
         cookie.setMaxAge(60);
         cookie.setPath(contextPath);
@@ -116,6 +117,7 @@ public class LoginController implements CommunityConstant {
         response.setContentType("image/png");
         try {
             OutputStream os = response.getOutputStream();
+            // 向浏览器输出图片
             ImageIO.write(image, "png", os);
         } catch (IOException e) {
             logger.error("响应验证码失败：" + e.getMessage());
@@ -158,8 +160,14 @@ public class LoginController implements CommunityConstant {
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public String logout(@CookieValue("ticket") String ticket) {
         userService.logout(ticket);
+        // 清除数据
         SecurityContextHolder.clearContext();
         return "redirect:/login";
+    }
+
+    @RequestMapping(path = "/forget",method = RequestMethod.GET)
+    public String forget(){
+        return "/site/forget";
     }
 
 }

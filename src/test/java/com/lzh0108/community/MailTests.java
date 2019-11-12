@@ -31,6 +31,7 @@ public class MailTests {
         Context context = new Context();
         context.setVariable("username", "sunday");
 
+        // 生成动态文件
         String content = templateEngine.process("/mail/demo", context);
         System.out.println(content);
 

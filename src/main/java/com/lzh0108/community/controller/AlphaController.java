@@ -75,11 +75,11 @@ public class AlphaController {
     }
 
     // /sutdent/123
-    @RequestMapping(value = "/student/{id}", method = RequestMethod.GET)
+    @RequestMapping(path = "/student/{id}", method = RequestMethod.GET)
     @ResponseBody
     public String getStudent(@PathVariable("id") int id) {
         System.out.println(id);
-        return "a sutdent";
+        return "a student";
     }
 
 
@@ -102,6 +102,8 @@ public class AlphaController {
         return mav;
     }
 
+    // 响应HTML数据（简化版）
+    // 方法返回类型为String，则说明返回的是view的路径
     @RequestMapping(path = "/school", method = RequestMethod.GET)
     public String getSchool(Model model) {
         model.addAttribute("name", "北京大学");

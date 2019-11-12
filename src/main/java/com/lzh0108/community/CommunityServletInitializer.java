@@ -4,7 +4,7 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 
 /**
- * Tomcat会访问这个方法，通过这个方法作为入口来启动运行这个项目
+ * Tomcat入口，Tomcat会先访问这个方法，通过这个方法作为入口来启动运行这个项目
  */
 
 public class CommunityServletInitializer extends SpringBootServletInitializer {

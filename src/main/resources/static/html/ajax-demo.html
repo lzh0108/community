@@ -13,9 +13,13 @@
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
     <script>
         function send() {
+            // $.post发送异步post请求
             $.post(
-                "/community/alpha/ajax",
+                // 访问路径
+                CONTEXT_PATH + "/alpha/ajax",
+                // 提交的数据
                 {"name":"zhangsan","age":23},
+                // 匿名函数处理服务器返回的结果，data为服务器返回的数据
                 function (data) {
                     console.log(typeof(data));
                     console.log(data);

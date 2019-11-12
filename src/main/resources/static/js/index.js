@@ -3,6 +3,7 @@ $(function () {
 });
 
 function publish() {
+    // 先将弹出的发布框隐藏掉
     $("#publishModal").modal("hide");
 
     // 发送ajax请求之前，将CSRF令牌设置到请求的消息头中

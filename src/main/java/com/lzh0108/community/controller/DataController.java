@@ -37,6 +37,7 @@ public class DataController {
         model.addAttribute("uvResult", uv);
         model.addAttribute("uvStartDate", start);
         model.addAttribute("uvEndDate", end);
+        // 将请求转发到 /data，即访问getDataPage()
         return "forward:/data";
     }
 

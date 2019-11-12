@@ -64,6 +64,7 @@ public class QuartzConfig {
         return factoryBean;
     }
 
+    // 触发器
     @Bean
     public SimpleTriggerFactoryBean postScoreRefreshTrigger(JobDetail postScoreRefreshJobDetail) {
         SimpleTriggerFactoryBean factoryBean = new SimpleTriggerFactoryBean();

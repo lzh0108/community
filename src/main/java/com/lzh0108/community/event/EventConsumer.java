@@ -64,11 +64,11 @@ public class EventConsumer implements CommunityConstant {
     @Value("${qiniu.bucket.share.name}")
     private String shareBucketName;
 
-    // 可以执行定时任务的线程池
+    // 可以执行定时任务的spring线程池
     @Autowired
     private ThreadPoolTaskScheduler taskScheduler;
 
-
+    // 发送系统通知，消费评论、关注、点赞事件
     @KafkaListener(topics = {TOPIC_COMMENT, TOPIC_LIKE, TOPIC_FOLLOW})
     public void handleCommentMessage(ConsumerRecord record) {
 
@@ -175,7 +175,7 @@ public class EventConsumer implements CommunityConstant {
         // Runtime.getRuntime().exec(cmd);语句的执行需要时间
         // 使用定时器来等待命令的完成，启动定时器，来监视该图片，一旦生成了，则上传至七牛云
         UploadTask task = new UploadTask(fileName, suffix);
-        // 每隔500毫秒执行一次，future里面封装了任务的状态
+        // 每隔500毫秒执行一次，future里面封装了任务的状态，也可以用来停止定时器
         Future future = taskScheduler.scheduleAtFixedRate(task, 500);
         task.setFuture(future);
 
@@ -240,6 +240,7 @@ public class EventConsumer implements CommunityConstant {
                 UploadManager manager = new UploadManager(new Configuration(Region.region2()));
 
                 try {
+                    // 上传文件
                     Response response = manager.put(
                             path, fileName, uploadToken, null, "image/" + suffix.substring(suffix.lastIndexOf(".") + 1), false);
                     // 处理响应结果

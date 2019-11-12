@@ -270,7 +270,7 @@ public class MessageController implements CommunityConstant {
                 map.put("entityType", data.get("entityType"));
                 map.put("entityId", data.get("entityId"));
                 map.put("postId", data.get("postId"));
-                // 通知作者
+                // 通知的作者
                 map.put("fromUser", userService.findUserById(notice.getFromId()));
 
                 noticeVoList.add(map);

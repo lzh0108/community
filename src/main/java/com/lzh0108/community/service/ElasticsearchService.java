@@ -43,11 +43,11 @@ public class ElasticsearchService {
         discussPostRepository.deleteById(id);
     }
 
-    public Page<DiscussPost> searchDiscussPost(String keywrod, int currentPage, int limit) {
+    public Page<DiscussPost> searchDiscussPost(String keyword, int currentPage, int limit) {
 
         // 构造搜索条件
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
-                .withQuery(QueryBuilders.multiMatchQuery(keywrod, "title", "content"))
+                .withQuery(QueryBuilders.multiMatchQuery(keyword, "title", "content"))
                 .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))

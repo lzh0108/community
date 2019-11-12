@@ -12,7 +12,9 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
 
+        // 实例化
         RedisTemplate<String, Object> template = new RedisTemplate<>();
+        // 设置连接工厂
         template.setConnectionFactory(factory);
 
         // 设置key的序列化方式

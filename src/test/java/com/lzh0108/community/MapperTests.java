@@ -8,7 +8,7 @@ import com.lzh0108.community.entity.DiscussPost;
 import com.lzh0108.community.entity.LoginTicket;
 import com.lzh0108.community.entity.Message;
 import com.lzh0108.community.entity.User;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -35,6 +35,7 @@ public class MapperTests {
 
     @Autowired
     private MessageMapper messageMapper;
+
 
     @Test
     public void testSelectUser() {

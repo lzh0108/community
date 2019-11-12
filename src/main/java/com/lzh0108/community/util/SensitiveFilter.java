@@ -25,10 +25,11 @@ public class SensitiveFilter {
     // 根节点
     private TrieNode rootNode = new TrieNode();
 
-    // PostConstruct表示当前方式是一个初始化方法，当容器实例化这个Bean后，当调用构造器后，这个方法就会被自动调用
+    // @PostConstruct表示当前方法是一个初始化方法，当容器实例化这个Bean以后，当调用构造器后，这个方法就会被自动调用（只初始化一次）
     @PostConstruct
     public void init() {
         try (
+                // 类加载器会从类路径（classes目录）下加载资源，getResourceAsStream("文件名")可以加载到文件的字节流
                 InputStream is = this.getClass().getClassLoader().getResourceAsStream("sensitive-words.txt");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         ) {
@@ -139,7 +140,7 @@ public class SensitiveFilter {
 
     // 判断是否为符号
     private boolean isSymbol(Character c) {
-        // isAsciiAlphanumeric方法判断字符是否是一个普通字符，0x2E80~0x9FFF 是东亚文字范围，包括中文，日文，韩文等等
+        // isAsciiAlphanumeric方法判断字符是否是一个普通（合法）字符，0x2E80~0x9FFF 是东亚文字范围，包括中文，日文，韩文等等
         return !CharUtils.isAsciiAlphanumeric(c) && (c < 0x2E80 || c > 0x9FFF);
     }
 

@@ -96,23 +96,31 @@ public class ElasticsearchTests {
 
         // 构造搜索条件
         SearchQuery searchQuery = new NativeSearchQueryBuilder()
+                // 搜索条件
                 .withQuery(QueryBuilders.multiMatchQuery("互联网寒冬", "title", "content"))
+                // 排序条件
                 .withSort(SortBuilders.fieldSort("type").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("score").order(SortOrder.DESC))
                 .withSort(SortBuilders.fieldSort("createTime").order(SortOrder.DESC))
+                // 分页条件，page表示要显示第几页（从第零页开始），size表示每页显示几条数据
                 .withPageable(PageRequest.of(0, 10))
+                // 哪些字段高亮显示
                 .withHighlightFields(
                         new HighlightBuilder.Field("title").preTags("<em>").postTags("</em>"),
                         new HighlightBuilder.Field("content").preTags("<em>").postTags("</em>")
                 ).build();
 
-        // repostitory底层调用 elasticsearchTemplate.queryForPage(searchQuery,class,SearchResultMapper) 查询数据
-        // 底层获取到了高粱显示的值，但是没有返回.
+        // repostitory底层调用 elasticsearchTemplate.queryForPage(searchQuery,DiscussPost.class,SearchResultMapper) 查询数据，class表示查询哪种类型的数据
+        // 底层获取到了高亮显示的值，但是没有返回.
         Page<DiscussPost> page = discussPostRepository.search(searchQuery);
 
+        // 总共有多少条数据
         System.out.println(page.getTotalElements());
+        // 总共有多少页
         System.out.println(page.getTotalPages());
+        // 当前是第几页
         System.out.println(page.getNumber());
+        // 每页显示几条数据
         System.out.println(page.getSize());
         for (DiscussPost discussPost : page) {
             System.out.println(discussPost);
@@ -140,7 +148,10 @@ public class ElasticsearchTests {
             @Override
             public <T> AggregatedPage<T> mapResults(SearchResponse searchResponse, Class<T> aClass, Pageable pageable) {
 
+                // 得到本次搜索命中的数据
                 SearchHits hits = searchResponse.getHits();
+
+                // 命中的数据量
                 if (hits.getTotalHits() <= 0) {
                     return null;
                 }
@@ -177,7 +188,9 @@ public class ElasticsearchTests {
 
                     // 处理高亮显示的结果
                     HighlightField titleField = hit.getHighlightFields().get("title");
+                    // 判断是否查到高亮显示的数据
                     if (titleField != null) {
+                        // 匹配的结果可能是多个数据，所以返回一个数组，而我们只需要取第一个数据
                         post.setTitle(titleField.getFragments()[0].toString());
                     }
 

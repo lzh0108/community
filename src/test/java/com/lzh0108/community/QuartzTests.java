@@ -15,17 +15,20 @@ import org.springframework.test.context.junit4.SpringRunner;
 @ContextConfiguration(classes = CommunityApplication.class)
 public class QuartzTests {
 
+    // 调度器
     @Autowired
     private Scheduler scheduler;
 
+    // 删除任务
     @Test
     public void deleteJob() {
         try {
-            boolean result = scheduler.deleteJob(new JobKey("alphaJob", "alphaJobGroup"));
+            boolean result = scheduler.deleteJob(new JobKey("postScoreRefreshJob", "communityJobGroup"));
             System.out.println(result);
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
     }
+
 
 }

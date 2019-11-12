@@ -95,7 +95,8 @@ public class SpringBootTests {
         Assert.assertEquals(1, rows);
 
         DiscussPost post = discussPostService.findDiscussPostById(data.getId());
-        // 判断小数是否相等有第三个参数，表示精度为几位小数，    此时是判断两个数到2位小数的地方是否相等
+        // 判断小数是否相等
+        // 第三个参数：表示精度为几位小数，    此时是判断两个数到2位小数的地方是否相等
         Assert.assertEquals(2000.00, post.getScore(), 2);
     }
 

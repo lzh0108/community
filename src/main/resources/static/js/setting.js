@@ -29,8 +29,11 @@ function upload() {
     $.ajax({
         url: "http://upload-z2.qiniup.com",
         method: "post",
+        // 是否需要把表单的内容转换为字符串
         processData: false,
+        // 是否让jquery设置上传的类型（false：不让）
         contentType: false,
+        // $("#uploadForm")得到的为jquery对象，$("#uploadForm")[0]得到的为js对象
         data: new FormData($("#uploadForm")[0]),
         success: function (data) {
             if (data && data.code == 0) {

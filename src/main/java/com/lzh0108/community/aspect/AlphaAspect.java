@@ -9,6 +9,9 @@ import org.springframework.stereotype.Component;
 //@Aspect
 public class AlphaAspect {
 
+    // 切点
+    // *代表方法的返回值（什么返回值都行）
+    // com.lzh0108.community.service.*.*(..)) 表示service包下面的所有类的（任意参数）所有方法
     @Pointcut("execution(* com.lzh0108.community.service.*.*(..))")
     public void pointcut() {
 
@@ -37,8 +40,10 @@ public class AlphaAspect {
     @Around("pointcut()")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable{
 
-        System.out.println("aroundBefor");
+        System.out.println("aroundBefore");
 
+        // 调用目标组件的方法
+        // obj为方法的返回值
         Object obj = joinPoint.proceed();
 
         System.out.println("aroundAfter");

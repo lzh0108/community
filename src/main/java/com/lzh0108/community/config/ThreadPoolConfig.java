@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 // @EnableScheduling 启动定时任务线程池
+// @EnableAsync 使@Async注解生效
 
 @Configuration
 @EnableScheduling

@@ -102,7 +102,7 @@ public class UserService implements CommunityConstant {
         // 发送激活邮件
         Context context = new Context();
         context.setVariable("email", user.getEmail());
-        // 激活路径 http://localhost:8080/community/activation/101/code
+        // 激活路径 http://localhost:8080/community/activation/用户id/激活码
         String url = domain + contextPath + "/activation/" + user.getId() + "/" + user.getActivationCode();
         context.setVariable("url", url);
         String content = templateEngine.process("/mail/activation", context);
@@ -165,7 +165,11 @@ public class UserService implements CommunityConstant {
         loginTicket.setTicket(CommunityUtil.generateUUID());
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
+
+        // 将登录凭证保存到mysql
         //loginTicketMapper.insertLoginTicket(loginTicket);
+
+        // 将登陆凭证保存到Redis
         String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
         redisTemplate.opsForValue().set(redisKey, loginTicket);
 
@@ -176,6 +180,8 @@ public class UserService implements CommunityConstant {
 
     public void logout(String ticket) {
 //        loginTicketMapper.updateStatus(ticket, 1);
+
+        // 修改登陆凭证的状态
         String redisKey = RedisKeyUtil.getTicketKey(ticket);
         LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisKey);
         loginTicket.setStatus(1);
@@ -184,6 +190,7 @@ public class UserService implements CommunityConstant {
 
     public LoginTicket findLoginTicket(String ticket) {
 //        return loginTicketMapper.selectByTicket(ticket);
+        // 从Redis里面查询凭证
         String redisKey = RedisKeyUtil.getTicketKey(ticket);
         return (LoginTicket) redisTemplate.opsForValue().get(redisKey);
     }
@@ -247,6 +254,7 @@ public class UserService implements CommunityConstant {
         redisTemplate.delete(redisKey);
     }
 
+    // 获得用户的权限
     public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
         User user = this.findUserById(userId);
 
