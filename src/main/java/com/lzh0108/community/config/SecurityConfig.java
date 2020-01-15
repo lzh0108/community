@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
     public void configure(WebSecurity web) throws Exception {
         // 忽略掉对静态资源的拦截
         web.ignoring().antMatchers("/resources/**");
+
+        // 使用SpringSecurity时，出现一个问题：url中带入了“;”符号导致请求地址非法
+        // 解决方法：设置去掉";"黑名单
+        // 参考博客：https://www.cnblogs.com/hetutu-5238/p/12145379.html
+        StrictHttpFirewall firewall = new StrictHttpFirewall();
+        // 设置允许";"
+        firewall.setAllowSemicolon(true);
+        web.httpFirewall(firewall);
     }
 
 
