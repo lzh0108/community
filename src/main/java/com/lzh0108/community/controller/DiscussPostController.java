@@ -210,7 +210,8 @@ public class DiscussPostController implements CommunityConstant {
     @RequestMapping(path = "/delete", method = RequestMethod.POST)
     @ResponseBody
     public String setDelete(int id) {
-        discussPostService.updateStatus(id, 2);
+
+        discussPostService.deleteDiscussPost(id);
 
         // 同步elasticsearch中的数据
         // 触发删帖事件

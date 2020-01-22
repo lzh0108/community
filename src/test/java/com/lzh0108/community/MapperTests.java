@@ -1,13 +1,11 @@
 package com.lzh0108.community;
 
-import com.lzh0108.community.dao.DiscussPostMapper;
-import com.lzh0108.community.dao.LoginTicketMapper;
-import com.lzh0108.community.dao.MessageMapper;
-import com.lzh0108.community.dao.UserMapper;
+import com.lzh0108.community.dao.*;
 import com.lzh0108.community.entity.DiscussPost;
 import com.lzh0108.community.entity.LoginTicket;
 import com.lzh0108.community.entity.Message;
 import com.lzh0108.community.entity.User;
+import com.lzh0108.community.entity.query.result.ReplyPostResult;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +33,9 @@ public class MapperTests {
 
     @Autowired
     private MessageMapper messageMapper;
+
+    @Autowired
+    private CommentMapper commentMapper;
 
 
     @Test
@@ -78,7 +79,7 @@ public class MapperTests {
 
     @Test
     public void testSelectPosts() {
-        List<DiscussPost> list = discussPostMapper.selectDiscussPosts(149, 0, 10,0);
+        List<DiscussPost> list = discussPostMapper.selectDiscussPosts(149, 0, 10, 0);
         for (DiscussPost post : list) {
             System.out.println(post);
         }
@@ -136,5 +137,18 @@ public class MapperTests {
 
         rows = messageMapper.selectLetterUnreadCount(131, "111_131");
         System.out.println(rows);
+    }
+
+    @Test
+    public void testSelectReplyPost() {
+        List<ReplyPostResult> list = discussPostMapper.selectReplyDiscussPosts(155, 0, 1);
+        for (ReplyPostResult post : list) {
+            System.out.println(post.toString());
+        }
+    }
+
+    @Test
+    public void testUpdateCommentStatusByPostId(){
+        commentMapper.updateStatusByPostId(285,1);
     }
 }

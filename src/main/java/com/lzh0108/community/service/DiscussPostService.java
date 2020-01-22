@@ -5,6 +5,7 @@ import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.lzh0108.community.dao.DiscussPostMapper;
 import com.lzh0108.community.entity.DiscussPost;
+import com.lzh0108.community.entity.query.result.ReplyPostResult;
 import com.lzh0108.community.util.RedisKeyUtil;
 import com.lzh0108.community.util.SensitiveFilter;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -15,10 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -35,6 +38,9 @@ public class DiscussPostService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private CommentService commentService;
 
     @Value("${caffeine.posts.max-size}")
     private int maxSize;
@@ -165,6 +171,19 @@ public class DiscussPostService {
 
     public int updateScore(int id, double score) {
         return discussPostMapper.updateScore(id, score);
+    }
+
+    public List<ReplyPostResult> findReplyDiscussPosts(int userId, int offset, int limit) {
+        return discussPostMapper.selectReplyDiscussPosts(userId, offset, limit);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
+    public void deleteDiscussPost(int id) {
+
+        // 更新帖子状态
+        updateStatus(id, 2);
+        // 更新帖子的相关评论状态
+        commentService.updateStatusByPostId(id,1);
     }
 
 }

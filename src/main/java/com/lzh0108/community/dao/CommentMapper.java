@@ -13,8 +13,16 @@ public interface CommentMapper {
 
     int selectCommentByEntity(int entityType, int entityId);
 
+    int selectPostCommentCountByUserId(int userId, int entityType);
+
     int insertComment(Comment comment);
 
     Comment selectCommentById(int id);
+
+    // 更新指定评论的状态
+    int updateStatus(int id, int status);
+
+    // 更新指定帖子的相关评论的状态
+    int updateStatusByPostId(int postId,int status);
 
 }

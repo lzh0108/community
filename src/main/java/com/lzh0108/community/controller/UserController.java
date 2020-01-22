@@ -1,9 +1,10 @@
 package com.lzh0108.community.controller;
 
 
-import com.lzh0108.community.service.FollowService;
-import com.lzh0108.community.service.LikeService;
-import com.lzh0108.community.service.UserService;
+import com.lzh0108.community.entity.DiscussPost;
+import com.lzh0108.community.entity.Page;
+import com.lzh0108.community.entity.query.result.ReplyPostResult;
+import com.lzh0108.community.service.*;
 import com.lzh0108.community.annotation.LoginRequired;
 import com.lzh0108.community.entity.User;
 import com.lzh0108.community.util.CommunityConstant;
@@ -16,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +30,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -49,6 +52,12 @@ public class UserController implements CommunityConstant {
 
     @Autowired
     private FollowService followService;
+
+    @Autowired
+    private DiscussPostService discussPostService;
+
+    @Autowired
+    private CommentService commentService;
 
     // 上传文件路径
     @Value("${community.path.upload}")
@@ -198,6 +207,16 @@ public class UserController implements CommunityConstant {
     // 个人主页
     @RequestMapping(path = "/profile/{userId}", method = RequestMethod.GET)
     public String getProfilePage(@PathVariable("userId") int userId, Model model) {
+        // 主语，标明怎样显示，是我的帖子，还是TA的帖子
+        String subject = "我";
+        User loginUser = hostHolder.getUser();
+        // 如果用户未登录，或者查看的不是当前登录用户的主页，则显示TA
+        if (loginUser == null || userId != loginUser.getId()) {
+            subject = "TA";
+        }
+        // 小标题显示信息
+        model.addAttribute("subject", subject);
+
         User user = userService.findUserById(userId);
         if (user == null) {
             throw new RuntimeException("该用户不存在！");
@@ -226,6 +245,89 @@ public class UserController implements CommunityConstant {
         model.addAttribute("hasFollowed", hasFollowed);
 
         return "/site/profile";
+    }
+
+    // 用户发布的帖子
+    @RequestMapping(path = "/post/{userId}", method = RequestMethod.GET)
+    public String getUserPost(@PathVariable("userId") int userId, Model model, Page page) {
+
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("该用户不存在！");
+        }
+        // 用户信息
+        model.addAttribute("user", user);
+
+        // 帖子总数
+        int postCount = discussPostService.findDiscussPostRows(userId);
+        model.addAttribute("postCount", postCount);
+
+        // 分页相关参数
+        page.setRows(postCount);
+        page.setPath("/user/post/" + userId);
+
+        // 主语，怎样显示，是我的帖子，还是TA的帖子
+        String subject = "我";
+        user = hostHolder.getUser();
+        if (user == null || userId != user.getId()) {
+            subject = "TA";
+        }
+        // 小标题显示信息
+        model.addAttribute("subject", subject);
+
+        // 帖子
+        List<DiscussPost> list = discussPostService.findDiscussPosts(userId, page.getOffset(), page.getLimit(), 0);
+        List<Map<String, Object>> discussPosts = new ArrayList<>();
+        if (list != null) {
+            for (DiscussPost post : list) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("post", post);
+                // 查询帖子赞的数量
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount", likeCount);
+
+                discussPosts.add(map);
+            }
+        }
+        // 帖子相关信息
+        model.addAttribute("discussPosts", discussPosts);
+
+        return "/site/publish-post";
+    }
+
+    // 用户回复的帖子
+    @RequestMapping(path = "/reply/{userId}", method = RequestMethod.GET)
+    public String getUserReply(@PathVariable("userId") int userId, Model model, Page page) {
+
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            throw new RuntimeException("该用户不存在！");
+        }
+        // 用户信息
+        model.addAttribute("user", user);
+
+        // 主语，怎样显示，是我的帖子，还是TA的帖子
+        String subject = "我";
+        user = hostHolder.getUser();
+        if (user == null || userId != user.getId()) {
+            subject = "TA";
+        }
+        // 小标题显示信息
+        model.addAttribute("subject", subject);
+
+        // 帖子总数
+        int postCount = commentService.findPostCommentCountByUserId(userId, ENTITY_TYPE_POST);
+        model.addAttribute("postCount", postCount);
+
+        // 分页相关参数
+        page.setRows(postCount);
+        page.setPath("/user/reply/" + userId);
+
+        //帖子及回复的相关信息
+        List<ReplyPostResult> list = discussPostService.findReplyDiscussPosts(userId, page.getOffset(), page.getLimit());
+        model.addAttribute("replyPost", list);
+
+        return "/site/reply-post";
     }
 
 }

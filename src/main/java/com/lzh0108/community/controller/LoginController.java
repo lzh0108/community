@@ -5,6 +5,7 @@ import com.lzh0108.community.service.UserService;
 import com.lzh0108.community.entity.User;
 import com.lzh0108.community.util.CommunityConstant;
 import com.lzh0108.community.util.CommunityUtil;
+import com.lzh0108.community.util.HostHolder;
 import com.lzh0108.community.util.RedisKeyUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -34,6 +35,9 @@ import java.util.concurrent.TimeUnit;
 public class LoginController implements CommunityConstant {
 
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
+
+    @Autowired
+    private HostHolder hostHolder;
 
     @Autowired
     private UserService userService;
@@ -162,6 +166,7 @@ public class LoginController implements CommunityConstant {
         userService.logout(ticket);
         // 清除数据
         SecurityContextHolder.clearContext();
+        hostHolder.clear();
         return "redirect:/login";
     }
 

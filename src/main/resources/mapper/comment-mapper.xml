@@ -38,10 +38,28 @@
         and entity_id = #{entityId}
     </select>
 
+    <select id="selectPostCommentCountByUserId" resultType="int">
+        select count(distinct entity_id)
+        from comment
+        where status = 0
+        and user_id=#{userId}
+        and entity_type=#{entityType}
+    </select>
+
     <insert id="insertComment" parameterType="Comment" keyProperty="id">
         insert into comment(<include refid="insertFields"></include>)
         values(#{userId},#{entityType},#{entityId},#{targetId},#{content},#{status},#{createTime})
     </insert>
+
+    <update id="updateStatus">
+        update comment set status=#{status} where id = #{id}
+    </update>
+
+    <update id="updateStatusByPostId">
+        update comment set status=#{status}
+        where entity_type = 1
+        and entity_id = #{postId}
+    </update>
 
 
 </mapper>
